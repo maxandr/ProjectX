@@ -125,6 +125,16 @@ namespace ProjectX
             State = FoxState.Follow;
         }
 
+        public void Teleport(Vector3 position)
+        {
+            Recall();
+            controller.enabled = false;
+            transform.position = position;
+            controller.enabled = true;
+            velocity = Vector3.zero;
+            jumping = false;
+        }
+
         /// <summary>Stops the Fox at the bank of any deep water that has no bridge yet.</summary>
         bool ClampByWater(ref float targetX)
         {
