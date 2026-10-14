@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CaveWater
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Shader: {fileID: 4800000, guid: 982bd655c9d3f6d4b9893091c9d94cca, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -17,8 +17,7 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
   m_LockedProperties: 
@@ -83,6 +82,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Absorption: 3
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
@@ -98,6 +98,9 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
+    - _F0: 0.04
+    - _FoamDistance: 0.04
+    - _FresnelPower: 4
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -106,14 +109,30 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _ReflectionStrength: 1
+    - _Refraction: 0.03
+    - _RippleStrength: 1
+    - _SSR: 1
+    - _SSRDistance: 20
+    - _SSRThickness: 0.5
     - _ScreenSpaceReflections: 1
     - _ScreenSpaceReflectionsContributeTransparent: 1
+    - _ShoreGain: 4.47
+    - _ShoreLine: 0.292
+    - _ShoreRingCount: 1.29
+    - _ShoreRingSpeed: 0.13
+    - _ShoreRingWidth: 0.324
+    - _ShoreWobble: 0.107
     - _Smoothness: 0.95
     - _SmoothnessTextureChannel: 0
+    - _Specular: 4
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _WaveScale: 1.5
+    - _WaveSpeed: 1
+    - _WaveStrength: 0.02
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
@@ -121,6 +140,9 @@ Material:
     - _BaseColor: {r: 0.02, g: 0.08, b: 0.09, a: 1}
     - _Color: {r: 0.02, g: 0.079999976, b: 0.089999996, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FoamColor: {r: 0.9, g: 0.95, b: 1, a: 0.6}
+    - _ShallowColor: {r: 0.45, g: 0.65, b: 0.7, a: 1}
+    - _ShoreColor: {r: 0.75, g: 0.85, b: 0.95, a: 0.09803922}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

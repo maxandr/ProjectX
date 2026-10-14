@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8651091381544296001}
   - component: {fileID: 3315328211725042793}
   - component: {fileID: 8934547857716247768}
+  - component: {fileID: 2517627906089915711}
   m_Layer: 0
   m_Name: Fox
   m_TagString: Untagged
@@ -109,6 +110,19 @@ MonoBehaviour:
   body: {fileID: 3863625231450235258}
   grownScale: 1.35
   growthRate: 1.2
+--- !u!114 &2517627906089915711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714756528458557024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1c376aa227efcd40ad2c80e8894f6c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.WaterRippleEmitter
+  scale: 0.3
 --- !u!1 &3260978376285257842
 GameObject:
   m_ObjectHideFlags: 0
