@@ -4078,9 +4078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00cea12251a93b43a5b051832a327c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.DeepWaterZone
-  leftEdgeX: 62
-  rightEdgeX: 67
-  isBridgeComplete: 0
+  isOpen: 0
 --- !u!65 &812106869
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9356,9 +9354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00cea12251a93b43a5b051832a327c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.DeepWaterZone
-  leftEdgeX: 78
-  rightEdgeX: 86.4
-  isBridgeComplete: 0
+  isOpen: 0
 --- !u!65 &1741508318
 BoxCollider:
   m_ObjectHideFlags: 0

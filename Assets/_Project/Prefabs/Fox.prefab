@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3315328211725042793}
   - component: {fileID: 8934547857716247768}
   - component: {fileID: 2517627906089915711}
+  - component: {fileID: 5940126372815548411}
   m_Layer: 0
   m_Name: Fox
   m_TagString: Untagged
@@ -74,7 +75,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.FoxCompanion
   rian: {fileID: 0}
-  input: {fileID: 0}
   body: {fileID: 3863625231450235258}
   pose: {fileID: 953338958887258199}
   followDistance: 2
@@ -89,7 +89,6 @@ MonoBehaviour:
   safeDropHeight: 8
   jumpArc: 0.6
   waterStopMargin: 0.5
-  commandRadius: 3
   sitScale: {x: 1, y: 1, z: 1}
   airScale: {x: 1, y: 1, z: 1}
   trotBobSpeed: 18
@@ -305,3 +304,16 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
   m_PrefabInstance: {fileID: 4608930490718948486}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5940126372815548411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714756528458557024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef1eb9a0b007492199050c8462b962d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.FoxCommander
+  commandRadius: 3

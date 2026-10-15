@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectX
@@ -7,10 +6,8 @@ namespace ProjectX
     /// Pressure plate on top of a counterweight column. While the Fox sits on it the column
     /// sinks and the linked stepping stones rise out of the water.
     /// </summary>
-    public class FoxWeightPlate : MonoBehaviour
+    public class FoxWeightPlate : MonoBehaviour, IFoxNode
     {
-        static readonly List<FoxWeightPlate> all = new List<FoxWeightPlate>();
-
         [SerializeField] BasaltPillar counterweight;
         public float pressedDrop = 0.5f;
         [SerializeField] BasaltPillar[] linkedPillars;
@@ -24,7 +21,7 @@ namespace ProjectX
         [ColorUsage(false, true)] public Color idleGlow = new Color(0.4f, 0.9f, 0.8f) * 1.5f;
         [ColorUsage(false, true)] public Color pressedGlow = new Color(1f, 0.8f, 0.4f) * 4f;
 
-        public bool IsPressed { get; private set; }
+        public bool IsOccupied { get; private set; }
         public Vector3 StandPoint => transform.position;
 
         float counterweightRestY;
@@ -44,30 +41,14 @@ namespace ProjectX
             }
         }
 
-        void OnEnable() => all.Add(this);
-        void OnDisable() => all.Remove(this);
+        void OnEnable() => FoxNodes.Register(this);
+        void OnDisable() => FoxNodes.Unregister(this);
 
-        public static FoxWeightPlate FindNear(Vector3 position, float radius)
+        public void Occupy()
         {
-            FoxWeightPlate nearest = null;
-            float best = radius;
-            foreach (var plate in all)
-            {
-                float distance = Vector3.Distance(position, plate.StandPoint);
-                if (distance <= best)
-                {
-                    best = distance;
-                    nearest = plate;
-                }
-            }
-            return nearest;
-        }
-
-        public void Press()
-        {
-            if (IsPressed)
+            if (IsOccupied)
                 return;
-            IsPressed = true;
+            IsOccupied = true;
             counterweight.MoveTo(counterweightRestY - pressedDrop, moveDuration);
             foreach (var pillar in linkedPillars)
                 pillar.MoveTo(raisedTopY, moveDuration);
@@ -76,9 +57,9 @@ namespace ProjectX
 
         public void Release()
         {
-            if (!IsPressed)
+            if (!IsOccupied)
                 return;
-            IsPressed = false;
+            IsOccupied = false;
             counterweight.MoveTo(counterweightRestY, moveDuration, releaseDelay);
             for (int i = 0; i < linkedPillars.Length; i++)
                 linkedPillars[i].MoveTo(linkedRestY[i], moveDuration, releaseDelay);

@@ -4,7 +4,7 @@ namespace ProjectX
 {
     /// <summary>
     /// An upright shipwreck plank on the far bank. When Rian reaches it she kicks it down
-    /// across the water, forming a permanent bridge for the Fox.
+    /// across the water, forming a permanent bridge that opens the water for the Fox.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public class KickPlank : MonoBehaviour
@@ -36,7 +36,7 @@ namespace ProjectX
                 () =>
                 {
                     plankCollider.enabled = true;
-                    water.isBridgeComplete = true;
+                    water.isOpen = true;
                 });
         }
     }

@@ -1,24 +1,24 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ProjectX
 {
     public enum FoxState
     {
         Follow,
-        WaitAtWater,
+        WaitAtBarrier,
         InteractNode,
     }
 
     /// <summary>
-    /// The Fox: trails Rian, hops small steps and gaps, waits at unbridged deep water,
-    /// and goes to / leaves a FoxWeightPlate on Rian's command.
+    /// The Fox: trails Rian, hops small steps and gaps, waits at closed FoxBarriers,
+    /// and goes to / leaves an IFoxNode when told to (see FoxCommander).
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class FoxCompanion : MonoBehaviour
     {
         [SerializeField] RianController rian;
-        [SerializeField] RianInput input;
         [Tooltip("Turns to face the movement direction. FoxGrowth scales this.")]
         [SerializeField] Transform body;
         [Tooltip("Child of Body; receives the sit / hop / trot squash.")]
@@ -40,11 +40,9 @@ namespace ProjectX
         public float safeDropHeight = 8f;
         [Tooltip("Height of a jump's apex above the higher of take-off and landing.")]
         public float jumpArc = 0.6f;
-        [Tooltip("How far before the water's edge the Fox stops.")]
-        public float waterStopMargin = 0.5f;
-
-        [Header("Commands")]
-        public float commandRadius = 3f;
+        [Tooltip("How far before a closed barrier's edge the Fox stops.")]
+        [FormerlySerializedAs("waterStopMargin")]
+        public float barrierStopMargin = 0.5f;
 
         [Header("Pose")]
         public Vector3 sitScale = new Vector3(1.1f, 0.7f, 1f);
@@ -54,13 +52,15 @@ namespace ProjectX
         public float turnSpeed = 900f;
 
         public FoxState State { get; private set; }
+        public bool IsBusy => State == FoxState.InteractNode;
+        public RianController Leader => rian;
         public float Facing { get; private set; } = 1f;
         public bool IsGrounded { get; private set; }
         public Vector3 Velocity => velocity;
         public event Action Jumped;
 
         CharacterController controller;
-        FoxWeightPlate plate;
+        IFoxNode node;
         Vector3 velocity;
         bool jumping;
         float yaw = 90f;
@@ -76,52 +76,39 @@ namespace ProjectX
 
         void Update()
         {
-            HandleCommand();
-
-            float targetX = State == FoxState.InteractNode ? plate.StandPoint.x : rian.transform.position.x - rian.Facing * followDistance;
-            bool blocked = ClampByWater(ref targetX);
-            if (State != FoxState.InteractNode)
+            float targetX = IsBusy ? node.StandPoint.x : rian.transform.position.x - rian.Facing * followDistance;
+            bool blocked = ClampByBarriers(ref targetX);
+            if (!IsBusy)
             {
                 bool atStop = Mathf.Abs(transform.position.x - targetX) < arriveRadius * 2f;
-                State = blocked && atStop ? FoxState.WaitAtWater : FoxState.Follow;
+                State = blocked && atStop ? FoxState.WaitAtBarrier : FoxState.Follow;
             }
 
             Move(targetX);
 
-            if (State == FoxState.InteractNode && !plate.IsPressed && IsGrounded
-                && Mathf.Abs(transform.position.x - plate.StandPoint.x) < arriveRadius * 2f
-                && Mathf.Abs(transform.position.y - plate.StandPoint.y) < 0.3f)
+            if (IsBusy && !node.IsOccupied && IsGrounded
+                && Mathf.Abs(transform.position.x - node.StandPoint.x) < arriveRadius * 2f
+                && Mathf.Abs(transform.position.y - node.StandPoint.y) < 0.3f)
             {
-                plate.Press();
+                node.Occupy();
             }
 
             UpdatePose();
         }
 
-        void HandleCommand()
+        /// <summary>Leaves any current node and heads for <paramref name="target"/>.</summary>
+        public void SendTo(IFoxNode target)
         {
-            if (!input.FoxPressed)
-                return;
-
-            if (State == FoxState.InteractNode)
-            {
-                Recall();
-                return;
-            }
-
-            var near = FoxWeightPlate.FindNear(rian.transform.position, commandRadius);
-            if (near != null)
-            {
-                plate = near;
-                State = FoxState.InteractNode;
-            }
+            Recall();
+            node = target;
+            State = FoxState.InteractNode;
         }
 
+        /// <summary>Leaves the current node, if any, and goes back to following Rian.</summary>
         public void Recall()
         {
-            if (plate != null)
-                plate.Release();
-            plate = null;
+            node?.Release();
+            node = null;
             State = FoxState.Follow;
         }
 
@@ -135,27 +122,12 @@ namespace ProjectX
             jumping = false;
         }
 
-        /// <summary>Stops the Fox at the bank of any deep water that has no bridge yet.</summary>
-        bool ClampByWater(ref float targetX)
+        /// <summary>Stops the Fox at the edge of any closed barrier.</summary>
+        bool ClampByBarriers(ref float targetX)
         {
-            float x = transform.position.x;
-            foreach (var zone in DeepWaterZone.All)
-            {
-                if (zone.isBridgeComplete)
-                    continue;
-                float leftStop = zone.leftEdgeX - waterStopMargin;
-                float rightStop = zone.rightEdgeX + waterStopMargin;
-                if (x <= leftStop + 0.05f && targetX > leftStop)
-                {
-                    targetX = leftStop;
+            foreach (var barrier in FoxBarrier.All)
+                if (barrier.Clamp(transform.position.x, ref targetX, barrierStopMargin))
                     return true;
-                }
-                if (x >= rightStop - 0.05f && targetX < rightStop)
-                {
-                    targetX = rightStop;
-                    return true;
-                }
-            }
             return false;
         }
 
@@ -265,7 +237,7 @@ namespace ProjectX
 
             bool moving = Mathf.Abs(velocity.x) > 0.2f;
             Vector3 targetScale = !IsGrounded ? airScale
-                : State == FoxState.WaitAtWater && !moving ? sitScale
+                : State == FoxState.WaitAtBarrier && !moving ? sitScale
                 : Vector3.one;
             pose.localScale = Vector3.Lerp(pose.localScale, targetScale, 1f - Mathf.Exp(-12f * dt));
 

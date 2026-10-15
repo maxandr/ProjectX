@@ -86,12 +86,12 @@ namespace ProjectX
                 pillar.MoveTo(bridgeTopY, bridgeRiseDuration, 0f, () =>
                 {
                     if (--remaining == 0)
-                        water.isBridgeComplete = true;
+                        water.isOpen = true;
                 });
             }
 
             vitality.Drain();
-            foxGrowth.Begin(water.leftEdgeX, water.rightEdgeX);
+            foxGrowth.Begin(water.LeftEdgeX, water.RightEdgeX);
             paletteDrain.Drain(saturationDelta);
 
             if (beamLight != null)
