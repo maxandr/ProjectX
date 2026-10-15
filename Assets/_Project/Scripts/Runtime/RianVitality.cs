@@ -7,9 +7,8 @@ namespace ProjectX
     {
         [SerializeField] RianController controller;
 
-        [Range(0f, 1f)] public float jumpForceMultiplier = 0.85f;
-
-        public void Drain()
+        /// <summary>Scales Rian's jump force by <paramref name="jumpForceMultiplier"/>.</summary>
+        public void Drain(float jumpForceMultiplier)
         {
             controller.maxJumpForce *= jumpForceMultiplier;
         }

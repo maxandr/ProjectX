@@ -1162,7 +1162,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.RianVitality
   controller: {fileID: 399257821393175243}
-  jumpForceMultiplier: 1
 --- !u!114 &7338027177126604370
 MonoBehaviour:
   m_ObjectHideFlags: 0

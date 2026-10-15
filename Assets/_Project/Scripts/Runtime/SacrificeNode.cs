@@ -21,6 +21,8 @@ namespace ProjectX
         [Header("Consequences")]
         [SerializeField] RianVitality vitality;
         [SerializeField] FoxGrowth foxGrowth;
+        [Tooltip("Rian's jump force is multiplied by this.")]
+        [Range(0f, 1f)] public float jumpForceMultiplier = 1f;
         [SerializeField] PaletteDrain paletteDrain;
         public float saturationDelta = -40f;
 
@@ -90,7 +92,7 @@ namespace ProjectX
                 });
             }
 
-            vitality.Drain();
+            vitality.Drain(jumpForceMultiplier);
             foxGrowth.Begin(water.LeftEdgeX, water.RightEdgeX);
             paletteDrain.Drain(saturationDelta);
 

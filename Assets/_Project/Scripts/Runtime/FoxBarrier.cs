@@ -30,7 +30,7 @@ namespace ProjectX
         /// Keeps a mover standing at <paramref name="x"/> on its own side, <paramref name="margin"/> short
         /// of the edge. Returns true when it moved <paramref name="targetX"/>.
         /// </summary>
-        public bool Clamp(float x, ref float targetX, float margin)
+        public virtual bool Clamp(float x, ref float targetX, float margin)
         {
             if (isOpen)
                 return false;
