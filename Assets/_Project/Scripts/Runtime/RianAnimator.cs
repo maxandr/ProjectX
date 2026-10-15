@@ -41,14 +41,17 @@ namespace ProjectX
             airTime = grounded ? 0f : airTime + Time.deltaTime;
 
             animator.SetBool(GroundedId, grounded);
-            animator.SetFloat(SpeedId, Mathf.Abs(controller.Velocity.x));
+            Vector3 velocity = controller.Velocity;
+            animator.SetFloat(SpeedId, new Vector2(velocity.x, velocity.z).magnitude);
             animator.SetFloat(MotionSpeedId, 1f);
             animator.SetBool(FreeFallId, airTime > fallTimeout);
             if (grounded)
                 animator.SetBool(JumpId, false);
 
-            // 90 = facing +X, 270 = facing -X; MoveTowards (not MoveTowardsAngle) so she turns via 180, toward the camera.
-            float targetYaw = controller.Facing > 0f ? 90f : 270f;
+            // Path yaw (90 when the path runs along +X) or that + 180; MoveTowards (not MoveTowardsAngle) so she
+            // turns via 180, toward the camera.
+            float pathYaw = PlayPath.Yaw(controller.transform.position.x);
+            float targetYaw = controller.Facing > 0f ? pathYaw : pathYaw + 180f;
             yaw = Mathf.MoveTowards(yaw, targetYaw, turnSpeed * Time.deltaTime);
             transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
         }

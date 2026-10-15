@@ -129,7 +129,7 @@ namespace ProjectX
         {
             Recall();
             controller.enabled = false;
-            transform.position = position;
+            transform.position = PlayPath.Snap(position);
             controller.enabled = true;
             velocity = Vector3.zero;
             jumping = false;
@@ -174,15 +174,18 @@ namespace ProjectX
 
                 float speed = Mathf.Lerp(walkSpeed, runSpeed, Mathf.InverseLerp(2f, 6f, Mathf.Abs(dx)));
                 speed = Mathf.Min(speed, Mathf.Abs(dx) * 5f); // ease into the stop point
-                velocity.x = Mathf.MoveTowards(velocity.x, dir * speed, acceleration * dt);
+                // velocity.x is world X; scaling by the path direction keeps speed the speed along the path.
+                velocity.x = Mathf.MoveTowards(velocity.x, dir * speed * PlayPath.Forward(transform.position.x).x, acceleration * dt);
 
                 if (IsGrounded && dir != 0f)
                     Traverse(dir);
             }
 
             velocity.y -= gravity * dt;
+            Vector3 forward = PlayPath.Forward(transform.position.x);
+            velocity.z = velocity.x * forward.z / forward.x;
             Vector3 delta = velocity * dt;
-            delta.z = -transform.position.z;
+            delta.z = PlayPath.ZAt(transform.position.x + delta.x) - transform.position.z; // stay on the path
             CollisionFlags flags = controller.Move(delta);
 
             if ((flags & CollisionFlags.Above) != 0 && velocity.y > 0f)
@@ -200,13 +203,13 @@ namespace ProjectX
         void Traverse(float dir)
         {
             Vector3 p = transform.position;
-            Vector3 forward = Vector3.right * dir;
+            Vector3 forward = PlayPath.Forward(p.x) * dir;
             float ahead = controller.radius + 0.15f;
 
             // Step up: a wall in front whose top is reachable.
             if (Probe.Raycast(p + Vector3.up * 0.15f, forward, ahead + 0.1f, out var wall))
             {
-                var top = new Vector3(wall.point.x + dir * 0.35f, p.y + maxStepUp + 0.2f, 0f);
+                var top = PlayPath.Snap(new Vector3(wall.point.x + forward.x * 0.35f, p.y + maxStepUp + 0.2f, 0f));
                 if (Probe.Raycast(top, Vector3.down, maxStepUp + 0.2f, out var step))
                 {
                     if (step.point.y - p.y > controller.stepOffset)
@@ -227,7 +230,7 @@ namespace ProjectX
             float scanTop = p.y + maxStepUp + 0.2f;
             for (float d = ahead + 0.25f; d <= ahead + maxGapJump + 0.3f; d += 0.2f)
             {
-                var origin = new Vector3(p.x + dir * d, scanTop, 0f);
+                var origin = PlayPath.Snap(new Vector3(p.x + forward.x * d, scanTop, 0f));
                 if (Probe.Raycast(origin, Vector3.down, maxStepUp + 0.2f + maxHopDown, out var landing))
                 {
                     JumpTo(landing.point + forward * 0.3f);
@@ -255,7 +258,8 @@ namespace ProjectX
         void UpdatePose()
         {
             float dt = Time.deltaTime;
-            float targetYaw = Facing > 0f ? 90f : 270f;
+            float pathYaw = PlayPath.Yaw(transform.position.x);
+            float targetYaw = Facing > 0f ? pathYaw : pathYaw + 180f;
             yaw = Mathf.MoveTowards(yaw, targetYaw, turnSpeed * dt);
             body.localRotation = Quaternion.Euler(0f, yaw, 0f);
 

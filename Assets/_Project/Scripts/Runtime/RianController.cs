@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectX
 {
     /// <summary>
-    /// Side-on platformer movement on the Z = 0 plane: acceleration, variable jump,
+    /// Side-on platformer movement along the <see cref="PlayPath"/>: acceleration, variable jump,
     /// coyote time and jump buffering. Animation is driven by <see cref="RianAnimator"/>.
     /// </summary>
     [RequireComponent(typeof(CharacterController), typeof(RianInput))]
@@ -61,7 +61,9 @@ namespace ProjectX
             coyoteTimer = IsGrounded ? coyoteTime : coyoteTimer - dt;
             jumpBufferTimer = input.JumpPressed ? jumpBufferTime : jumpBufferTimer - dt;
 
-            float targetVx = moveX * moveSpeed;
+            // velocity.x is world X; scaling by the path direction keeps moveSpeed the speed along the path.
+            Vector3 forward = PlayPath.Forward(transform.position.x);
+            float targetVx = moveX * moveSpeed * forward.x;
             float accel = IsGrounded
                 ? (Mathf.Abs(targetVx) > 0.01f ? groundAcceleration : groundDeceleration)
                 : airAcceleration;
@@ -88,8 +90,9 @@ namespace ProjectX
             float g = velocity.y < 0f ? gravity * fallGravityMultiplier : gravity;
             velocity.y = Mathf.Max(velocity.y - g * dt, -maxFallSpeed);
 
+            velocity.z = velocity.x * forward.z / forward.x;
             Vector3 delta = velocity * dt;
-            delta.z = -transform.position.z; // stay on the play plane
+            delta.z = PlayPath.ZAt(transform.position.x + delta.x) - transform.position.z; // stay on the path
             CollisionFlags flags = controller.Move(delta);
 
             if ((flags & CollisionFlags.Above) != 0 && velocity.y > 0f)
@@ -105,7 +108,7 @@ namespace ProjectX
         public void Teleport(Vector3 position)
         {
             controller.enabled = false;
-            transform.position = position;
+            transform.position = PlayPath.Snap(position);
             controller.enabled = true;
             velocity = Vector3.zero;
         }

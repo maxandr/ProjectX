@@ -40,7 +40,8 @@ namespace ProjectX
             bool grounded = fox.IsGrounded;
             airTime = grounded ? 0f : airTime + Time.deltaTime;
 
-            float speed = Mathf.Abs(fox.Velocity.x);
+            Vector3 velocity = fox.Velocity;
+            float speed = new Vector2(velocity.x, velocity.z).magnitude;
             float scale = Mathf.Max(transform.lossyScale.y, 0.01f);
             animator.SetBool(GroundedId, grounded);
             animator.SetFloat(SpeedId, speed);
