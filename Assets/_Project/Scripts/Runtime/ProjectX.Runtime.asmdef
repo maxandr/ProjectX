@@ -3,6 +3,7 @@
     "rootNamespace": "ProjectX",
     "references": [
         "Unity.InputSystem",
+        "Unity.Cinemachine",
         "Unity.Mathematics",
         "Unity.Splines",
         "Unity.RenderPipelines.Core.Runtime",

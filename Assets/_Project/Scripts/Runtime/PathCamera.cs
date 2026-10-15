@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace ProjectX
@@ -6,6 +7,9 @@ namespace ProjectX
     /// Turns the CinemachineCamera's yaw to look across the <see cref="PlayPath"/> at the target's X, plus the
     /// yaw/pitch keys authored on the path. The camera has no rotation control, so the Position Composer orbits it
     /// around the target.
+    /// At runtime the camera tracks a hidden anchor instead of the target: it follows the target's X/Z but only
+    /// takes its height while grounded, so jumps don't move the camera. It drops at once when the target falls below
+    /// it and rises smoothly (after landing higher, or once the target is <see cref="maxRiseInAir"/> above it).
     /// </summary>
     [DefaultExecutionOrder(-50)] // before CinemachineBrain's LateUpdate
     public class PathCamera : MonoBehaviour
@@ -19,7 +23,15 @@ namespace ProjectX
         [Tooltip("Time to catch up with the path's turn.")]
         public float smoothTime = 0.6f;
 
+        [Header("Height")]
+        [Tooltip("How far the target can rise above the camera's tracked height in the air before the camera follows.")]
+        public float maxRiseInAir = 3f;
+        [Tooltip("Time to rise to a new, higher ground height (e.g. after landing on a ledge). Drops are followed at once.")]
+        public float riseSmoothTime = 0.6f;
+
         RianController rian;
+        Transform anchor;
+        float riseVelocity;
         float basePitch;
         float baseYaw;
         float pitch;
@@ -36,14 +48,44 @@ namespace ProjectX
             Vector2 rotation = TargetRotation();
             pitch = rotation.x;
             yaw = rotation.y;
+
+            anchor = new GameObject("Camera Anchor") { hideFlags = HideFlags.HideAndDontSave }.transform;
+            anchor.position = target.position;
+            GetComponent<CinemachineCamera>().Target.TrackingTarget = anchor;
+        }
+
+        void OnDestroy()
+        {
+            if (anchor != null)
+                Destroy(anchor.gameObject);
         }
 
         void LateUpdate()
         {
+            UpdateAnchor();
+
             Vector2 goal = TargetRotation();
             pitch = Mathf.SmoothDampAngle(pitch, goal.x, ref pitchVelocity, smoothTime);
             yaw = Mathf.SmoothDampAngle(yaw, goal.y, ref yawVelocity, smoothTime);
             transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+        }
+
+        void UpdateAnchor()
+        {
+            Vector3 p = target.position;
+            float y = anchor.position.y;
+            bool grounded = rian == null || rian.IsGrounded;
+            float goal = grounded ? p.y : Mathf.Clamp(y, p.y - maxRiseInAir, p.y);
+            if (goal > y)
+            {
+                y = Mathf.SmoothDamp(y, goal, ref riseVelocity, riseSmoothTime);
+            }
+            else
+            {
+                y = goal;
+                riseVelocity = 0f;
+            }
+            anchor.position = new Vector3(p.x, y, p.z);
         }
 
         // (pitch, yaw). A straight path has yaw 90, which leaves the camera at its authored rotation;
