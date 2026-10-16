@@ -62,21 +62,25 @@ namespace ProjectX
 
             if (rian == null)
                 rian = FindAnyObjectByType<RianController>();
-            if (fox == null)
-                fox = FindAnyObjectByType<FoxCompanion>();
-
             current = all[index];
-            Vector3 position = current.transform.position;
             if (rian != null)
-                rian.Teleport(position);
-            if (fox != null)
-                fox.Teleport(position);
+                TeleportBoth(rian, current.transform.position);
             Debug.Log($"Warped to checkpoint {index + 1}: {current.name}");
         }
 
+        /// <summary>Puts Rian and the Fox back at the last checkpoint (or Rian's spawn point).</summary>
         public static void Respawn(RianController rian)
         {
-            rian.Teleport(current != null ? current.transform.position : rian.SpawnPoint);
+            TeleportBoth(rian, current != null ? current.transform.position : rian.SpawnPoint);
+        }
+
+        static void TeleportBoth(RianController rian, Vector3 position)
+        {
+            if (fox == null)
+                fox = FindAnyObjectByType<FoxCompanion>();
+            rian.Teleport(position);
+            if (fox != null)
+                fox.Teleport(position);
         }
     }
 }
