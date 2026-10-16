@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +18,9 @@ namespace ProjectX
 
         /// <summary>How many checkpoints are active, i.e. how many warp hotkeys do something.</summary>
         public static int Count => all.Count;
+
+        /// <summary>Raised after Rian and the Fox are teleported (respawn or warp), so puzzles can snap back to rest.</summary>
+        public static event Action Teleported;
 
         void OnEnable()
         {
@@ -81,6 +85,7 @@ namespace ProjectX
             rian.Teleport(position);
             if (fox != null)
                 fox.Teleport(position);
+            Teleported?.Invoke();
         }
     }
 }

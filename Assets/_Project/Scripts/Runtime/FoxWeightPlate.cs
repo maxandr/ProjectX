@@ -41,8 +41,17 @@ namespace ProjectX
             }
         }
 
-        void OnEnable() => FoxNodes.Register(this);
-        void OnDisable() => FoxNodes.Unregister(this);
+        void OnEnable()
+        {
+            FoxNodes.Register(this);
+            Checkpoint.Teleported += SnapToRest;
+        }
+
+        void OnDisable()
+        {
+            FoxNodes.Unregister(this);
+            Checkpoint.Teleported -= SnapToRest;
+        }
 
         public void Occupy()
         {
@@ -64,6 +73,18 @@ namespace ProjectX
             for (int i = 0; i < linkedPillars.Length; i++)
                 linkedPillars[i].MoveTo(linkedRestY[i], moveDuration, releaseDelay);
             SetGlow(idleGlow);
+        }
+
+        /// <summary>Puts the plate, counterweight and stones back at rest at once (the teleport recalled the Fox).</summary>
+        void SnapToRest()
+        {
+            IsOccupied = false;
+            counterweight.SnapTo(counterweightRestY);
+            for (int i = 0; i < linkedPillars.Length; i++)
+                linkedPillars[i].SnapTo(linkedRestY[i]);
+            StopAllCoroutines(); // only glow tweens run on the plate
+            if (glowMaterial != null)
+                glowMaterial.SetColor("_EmissionColor", idleGlow);
         }
 
         void SetGlow(Color target)

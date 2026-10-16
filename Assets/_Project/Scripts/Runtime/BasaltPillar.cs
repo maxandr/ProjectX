@@ -26,5 +26,14 @@ namespace ProjectX
                 transform.position = new Vector3(restPosition.x + shake, Mathf.Lerp(fromY, topY, t), restPosition.z);
             }, Ease.InOutSine, onComplete, delay);
         }
+
+        /// <summary>Stops any move and puts the top at <paramref name="topY"/> at once.</summary>
+        public void SnapTo(float topY)
+        {
+            if (routine != null)
+                StopCoroutine(routine);
+            routine = null;
+            transform.position = new Vector3(restPosition.x, topY, restPosition.z);
+        }
     }
 }
