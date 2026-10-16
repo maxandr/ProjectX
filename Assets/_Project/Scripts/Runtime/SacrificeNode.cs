@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Events;
 
 namespace ProjectX
@@ -16,7 +17,7 @@ namespace ProjectX
         [SerializeField] BasaltPillar[] bridgePillars;
         public float bridgeTopY = 0f;
         public float bridgeRiseDuration = 2f;
-        [SerializeField] DeepWaterZone water;
+        [FormerlySerializedAs("water")] [SerializeField] FoxBarrier chasm;
 
         [Header("Consequences")]
         [SerializeField] RianVitality vitality;
@@ -88,12 +89,12 @@ namespace ProjectX
                 pillar.MoveTo(bridgeTopY, bridgeRiseDuration, 0f, () =>
                 {
                     if (--remaining == 0)
-                        water.isOpen = true;
+                        chasm.isOpen = true;
                 });
             }
 
             vitality.Drain(jumpForceMultiplier);
-            foxGrowth.Begin(water.LeftEdgeX, water.RightEdgeX);
+            foxGrowth.Begin(chasm.LeftEdgeX, chasm.RightEdgeX);
             paletteDrain.Drain(saturationDelta);
 
             if (beamLight != null)
