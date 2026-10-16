@@ -3,10 +3,11 @@ using UnityEngine;
 namespace ProjectX
 {
     /// <summary>
-    /// A chasm or other fall hazard: a <see cref="FoxBarrier"/> until a bridge opens it.
-    /// Rian entering the trigger volume respawns at the last checkpoint.
+    /// A chasm or other fall hazard: Rian entering the trigger volume respawns at the last checkpoint.
+    /// Blocking the Fox is a separate <see cref="FoxBarrier"/>.
     /// </summary>
-    public class DeathZone : FoxBarrier
+    [RequireComponent(typeof(Collider))]
+    public class DeathZone : MonoBehaviour
     {
         void OnTriggerEnter(Collider other)
         {
