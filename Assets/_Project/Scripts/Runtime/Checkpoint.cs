@@ -15,6 +15,9 @@ namespace ProjectX
         static RianController rian;
         static FoxCompanion fox;
 
+        /// <summary>How many checkpoints are active, i.e. how many warp hotkeys do something.</summary>
+        public static int Count => all.Count;
+
         void OnEnable()
         {
             all.Add(this);

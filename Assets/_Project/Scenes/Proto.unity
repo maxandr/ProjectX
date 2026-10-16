@@ -10918,6 +10918,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1345691784}
   - component: {fileID: 1345691783}
+  - component: {fileID: 1345691785}
   m_Layer: 0
   m_Name: Debug Time Scale
   m_TagString: Untagged
@@ -10940,6 +10941,21 @@ MonoBehaviour:
   step: 1.25
   minScale: 0.1
   maxScale: 4
+--- !u!114 &1345691785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1345691782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd13a80a06147f08d4a294f04a86557, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.CheatsOverlay
+  opacity: 0.45
+  fontSize: 0.022
+  margin: 16
 --- !u!4 &1345691784
 Transform:
   m_ObjectHideFlags: 0
