@@ -11,29 +11,50 @@ namespace ProjectX
         public float minScale = 0.1f;
         public float maxScale = 4f;
 
-        void Update()
+        InputAction scroll, resetScale;
+
+        void Awake()
         {
-            var mouse = Mouse.current;
-            if (mouse == null)
-                return;
-
-            if (mouse.middleButton.wasPressedThisFrame)
-            {
-                SetScale(1f);
-                return;
-            }
-
-            float scroll = mouse.scroll.ReadValue().y;
-            if (scroll != 0f)
-                SetScale(Time.timeScale * (scroll > 0f ? step : 1f / step));
+            scroll = new InputAction("Time Scale", InputActionType.PassThrough, "<Mouse>/scroll/y");
+            resetScale = new InputAction("Reset Time Scale", InputActionType.Button, "<Mouse>/middleButton");
         }
+
+        void OnEnable()
+        {
+            scroll.performed += OnScroll;
+            resetScale.performed += OnResetScale;
+            scroll.Enable();
+            resetScale.Enable();
+        }
+
+        void OnDisable()
+        {
+            scroll.performed -= OnScroll;
+            resetScale.performed -= OnResetScale;
+            scroll.Disable();
+            resetScale.Disable();
+        }
+
+        void OnDestroy()
+        {
+            scroll.Dispose();
+            resetScale.Dispose();
+            Time.timeScale = 1f;
+        }
+
+        void OnScroll(InputAction.CallbackContext context)
+        {
+            float delta = context.ReadValue<float>();
+            if (delta != 0f)
+                SetScale(Time.timeScale * (delta > 0f ? step : 1f / step));
+        }
+
+        void OnResetScale(InputAction.CallbackContext _) => SetScale(1f);
 
         void SetScale(float scale)
         {
             Time.timeScale = Mathf.Clamp(scale, minScale, maxScale);
             Debug.Log($"Time scale: {Time.timeScale:0.00}x");
         }
-
-        void OnDestroy() => Time.timeScale = 1f;
     }
 }

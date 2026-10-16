@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace ProjectX
 {
-    /// <summary>Polls the "Player" map of ProjectX.inputactions for Rian and the Fox command.</summary>
+    /// <summary>Wraps the "Player" map of ProjectX.inputactions for Rian and the Fox command.
+    /// Movement is polled every frame; button presses are also raised as events.</summary>
     public class RianInput : MonoBehaviour
     {
         [SerializeField] InputActionAsset actions;
@@ -15,7 +17,10 @@ namespace ProjectX
         public bool JumpPressed => jump?.WasPressedThisFrame() ?? false;
         public bool JumpHeld => jump?.IsPressed() ?? false;
         public bool SacrificeHeld => sacrifice?.IsPressed() ?? false;
-        public bool FoxPressed => fox?.WasPressedThisFrame() ?? false;
+
+        public event Action SacrificePressed;
+        public event Action SacrificeReleased;
+        public event Action FoxPressed;
 
         void Awake()
         {
@@ -32,7 +37,28 @@ namespace ProjectX
             fox = map.FindAction("Fox", true);
         }
 
-        void OnEnable() => map?.Enable();
-        void OnDisable() => map?.Disable();
+        void OnEnable()
+        {
+            if (map == null)
+                return;
+            sacrifice.performed += OnSacrificePerformed;
+            sacrifice.canceled += OnSacrificeCanceled;
+            fox.performed += OnFoxPerformed;
+            map.Enable();
+        }
+
+        void OnDisable()
+        {
+            if (map == null)
+                return;
+            sacrifice.performed -= OnSacrificePerformed;
+            sacrifice.canceled -= OnSacrificeCanceled;
+            fox.performed -= OnFoxPerformed;
+            map.Disable();
+        }
+
+        void OnSacrificePerformed(InputAction.CallbackContext _) => SacrificePressed?.Invoke();
+        void OnSacrificeCanceled(InputAction.CallbackContext _) => SacrificeReleased?.Invoke();
+        void OnFoxPerformed(InputAction.CallbackContext _) => FoxPressed?.Invoke();
     }
 }

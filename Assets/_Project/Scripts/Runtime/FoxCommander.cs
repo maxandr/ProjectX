@@ -6,7 +6,6 @@ namespace ProjectX
     /// Turns Rian's Fox button into orders: sends the Fox to the nearest <see cref="IFoxNode"/>,
     /// or calls it back if it is already on one.
     /// </summary>
-    [DefaultExecutionOrder(-10)]
     [RequireComponent(typeof(FoxCompanion))]
     public class FoxCommander : MonoBehaviour
     {
@@ -22,11 +21,11 @@ namespace ProjectX
             input = fox.Leader.GetComponent<RianInput>();
         }
 
-        void Update()
-        {
-            if (!input.FoxPressed)
-                return;
+        void OnEnable() => input.FoxPressed += Command;
+        void OnDisable() => input.FoxPressed -= Command;
 
+        void Command()
+        {
             if (fox.IsBusy)
             {
                 fox.Recall();

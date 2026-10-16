@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Events;
@@ -37,7 +38,7 @@ namespace ProjectX
 
         RianInput rianInput;
         Material glowMaterial;
-        float holdTimer;
+        Coroutine holdRoutine, glowRoutine;
         float glow;
         bool fired;
 
@@ -48,40 +49,98 @@ namespace ProjectX
                 glowMaterial = glowRenderer.material;
                 glowMaterial.EnableKeyword("_EMISSION");
             }
+            SetGlow(0f);
         }
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent(out RianInput input))
-                rianInput = input;
+            if (fired || rianInput != null || !other.TryGetComponent(out RianInput input))
+                return;
+
+            rianInput = input;
+            rianInput.SacrificePressed += BeginHold;
+            rianInput.SacrificeReleased += CancelHold;
+            if (rianInput.SacrificeHeld)
+                BeginHold();
         }
 
         void OnTriggerExit(Collider other)
         {
-            if (other.GetComponent<RianInput>() == rianInput)
-                rianInput = null;
+            if (rianInput != null && other.GetComponent<RianInput>() == rianInput)
+                Release();
         }
 
-        void Update()
-        {
-            if (!fired)
-            {
-                bool holding = rianInput != null && rianInput.SacrificeHeld;
-                holdTimer = holding ? holdTimer + Time.deltaTime : 0f;
-                if (holdTimer >= holdDuration)
-                    Fire();
-            }
+        void OnDisable() => Release();
 
-            float targetGlow = fired ? 0.15f : holdTimer / holdDuration;
-            glow = Mathf.MoveTowards(glow, targetGlow, Time.deltaTime * (fired ? 0.5f : 3f));
+        void Release()
+        {
+            if (rianInput == null)
+                return;
+            rianInput.SacrificePressed -= BeginHold;
+            rianInput.SacrificeReleased -= CancelHold;
+            rianInput = null;
+            CancelHold();
+        }
+
+        void BeginHold()
+        {
+            if (fired || holdRoutine != null)
+                return;
+            StopGlow();
+            holdRoutine = StartCoroutine(Hold());
+        }
+
+        void CancelHold()
+        {
+            if (holdRoutine == null)
+                return;
+            StopCoroutine(holdRoutine);
+            holdRoutine = null;
+            if (isActiveAndEnabled)
+                glowRoutine = StartCoroutine(GlowTo(0f, 3f));
+        }
+
+        IEnumerator Hold()
+        {
+            for (float timer = 0f; timer < holdDuration; timer += Time.deltaTime)
+            {
+                SetGlow(Mathf.MoveTowards(glow, timer / holdDuration, Time.deltaTime * 3f));
+                yield return null;
+            }
+            holdRoutine = null;
+            Release();
+            Fire();
+        }
+
+        IEnumerator GlowTo(float target, float speed)
+        {
+            while (!Mathf.Approximately(glow, target))
+            {
+                SetGlow(Mathf.MoveTowards(glow, target, Time.deltaTime * speed));
+                yield return null;
+            }
+            glowRoutine = null;
+        }
+
+        void StopGlow()
+        {
+            if (glowRoutine == null)
+                return;
+            StopCoroutine(glowRoutine);
+            glowRoutine = null;
+        }
+
+        void SetGlow(float value)
+        {
+            glow = value;
             if (glowMaterial != null)
                 glowMaterial.SetColor("_EmissionColor", glowColor * glow);
         }
-
         void Fire()
         {
             fired = true;
-            glow = 1.5f; // flash
+            SetGlow(1.5f); // flash
+            glowRoutine = StartCoroutine(GlowTo(0.15f, 0.5f));
 
             int remaining = bridgePillars.Length;
             foreach (var pillar in bridgePillars)

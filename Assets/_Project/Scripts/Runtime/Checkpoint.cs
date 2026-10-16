@@ -11,12 +11,23 @@ namespace ProjectX
     {
         static readonly List<Checkpoint> all = new List<Checkpoint>();
         static Checkpoint current;
-        static int lastHotkeyFrame = -1;
+        static InputAction warpHotkeys;
         static RianController rian;
         static FoxCompanion fox;
 
-        void OnEnable() => all.Add(this);
-        void OnDisable() => all.Remove(this);
+        void OnEnable()
+        {
+            all.Add(this);
+            if (all.Count == 1)
+                EnableHotkeys();
+        }
+
+        void OnDisable()
+        {
+            all.Remove(this);
+            if (all.Count == 0)
+                warpHotkeys?.Disable();
+        }
 
         void OnTriggerEnter(Collider other)
         {
@@ -24,31 +35,26 @@ namespace ProjectX
                 current = this;
         }
 
-        void Update()
+        // One action shared by all checkpoints: bindings 0..8 are the digit row, 9..17 the numpad.
+        static void EnableHotkeys()
         {
-            // Every checkpoint runs Update; only the first one each frame polls the keys.
-            if (lastHotkeyFrame == Time.frameCount)
-                return;
-            lastHotkeyFrame = Time.frameCount;
-
-            var keyboard = Keyboard.current;
-            if (keyboard == null)
-                return;
-
-            for (int i = 0; i < 9; i++)
+            if (warpHotkeys == null)
             {
-                if (keyboard[Key.Digit1 + i].wasPressedThisFrame || keyboard[Key.Numpad1 + i].wasPressedThisFrame)
-                {
-                    WarpTo(i);
-                    return;
-                }
+                warpHotkeys = new InputAction("Warp To Checkpoint", InputActionType.Button);
+                for (int i = 1; i <= 9; i++)
+                    warpHotkeys.AddBinding($"<Keyboard>/{i}");
+                for (int i = 1; i <= 9; i++)
+                    warpHotkeys.AddBinding($"<Keyboard>/numpad{i}");
+                warpHotkeys.performed += context =>
+                    WarpTo(context.action.GetBindingIndexForControl(context.control) % 9);
             }
+            warpHotkeys.Enable();
         }
 
         static void WarpTo(int index)
         {
             all.Sort((a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
-            if (index >= all.Count)
+            if (index < 0 || index >= all.Count)
                 return;
 
             if (rian == null)
