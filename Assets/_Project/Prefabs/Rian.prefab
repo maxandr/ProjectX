@@ -148,8 +148,8 @@ MonoBehaviour:
   chains:
   - name: Front Left
     root: {fileID: 3766638684561530275}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 52
+    dampingPercent: 66.1
   - name: Right
     root: {fileID: 2236048251380001117}
     stiffnessPercent: 21.4
@@ -352,8 +352,8 @@ MonoBehaviour:
   chains:
   - name: Front
     root: {fileID: 320656127686784620}
-    stiffnessPercent: 31.1
-    dampingPercent: 56.1
+    stiffnessPercent: 44.7
+    dampingPercent: 43.2
   - name: Left
     root: {fileID: 913414213344237365}
     stiffnessPercent: 9.2
@@ -428,7 +428,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 0}
   radiusCm: 10
-  radius: -1
 --- !u!1 &8456702376817814567
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,7 +623,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 0}
   radiusCm: 3.5
-  radius: -1
 --- !u!4 &481984276558298007 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8325478463935316153, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -654,7 +652,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 7875940753127460113}
   radiusCm: 3
-  radius: -1
 --- !u!4 &2236048251380001117 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7652278367473914483, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -689,7 +686,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 532359094297041611}
   radiusCm: 6
-  radius: -1
 --- !u!4 &2745353447924234540 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3232699689766108670, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -749,7 +745,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 7277138970281803197}
   radiusCm: 3
-  radius: -1
 --- !u!4 &5113891941530380224 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5493721906417394450, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -789,7 +784,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 5311510781833805843}
   radiusCm: 3
-  radius: -1
 --- !u!1 &5873339634595879082 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2645895497324979076, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -809,7 +803,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 5562103382604019795}
   radiusCm: 6
-  radius: -1
 --- !u!4 &6723991460984441079 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2912204103577760729, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -839,7 +832,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 481984276558298007}
   radiusCm: 4.5
-  radius: -1
 --- !u!4 &7435303497065124561 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1303178061324904959, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -874,7 +866,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 0}
   radiusCm: 3.5
-  radius: -1
 --- !u!4 &8264362418691267781 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -899,7 +890,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 2745353447924234540}
   radiusCm: 4.5
-  radius: -1
 --- !u!4 &8739621615695350100 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 897077407621313146, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
@@ -944,4 +934,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.SpringBoneCollider
   end: {fileID: 4319514174761035990}
   radiusCm: 3
-  radius: -1

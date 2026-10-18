@@ -10103,13 +10103,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208839335}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.024663838, y: -0.452495, z: -0.012520799, w: 0.8913379}
-  m_LocalPosition: {x: -0.18577828, y: 0.63769054, z: -4.5138836}
+  m_LocalRotation: {x: -0.027659994, y: 0, z: 0, w: 0.9996174}
+  m_LocalPosition: {x: -6.36, y: 0.63769054, z: -7.6482787}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -3.17, y: -53.83, z: 0}
+  m_LocalEulerAnglesHint: {x: -3.17, y: 0, z: 0}
 --- !u!1 &1226019553
 GameObject:
   m_ObjectHideFlags: 0
@@ -14205,8 +14205,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1672413808}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.024663838, y: -0.452495, z: -0.012520799, w: 0.8913379}
-  m_LocalPosition: {x: -0.18577828, y: 0.63769054, z: -4.5138836}
+  m_LocalRotation: {x: -0.027659994, y: 0, z: 0, w: 0.9996174}
+  m_LocalPosition: {x: -6.36, y: 0.63769054, z: -7.6482787}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18856,18 +18856,6 @@ PrefabInstance:
     - target: {fileID: 1168608157811376926, guid: 5c061302f92ab6a4dafba50e152c67c1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2617651716426960369, guid: 5c061302f92ab6a4dafba50e152c67c1, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2617651716426960369, guid: 5c061302f92ab6a4dafba50e152c67c1, type: 3}
-      propertyPath: chains.Array.data[0].dampingPercent
-      value: 43.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2617651716426960369, guid: 5c061302f92ab6a4dafba50e152c67c1, type: 3}
-      propertyPath: chains.Array.data[0].stiffnessPercent
-      value: 44.7
       objectReference: {fileID: 0}
     - target: {fileID: 4123722079846317110, guid: 5c061302f92ab6a4dafba50e152c67c1, type: 3}
       propertyPath: m_Name
