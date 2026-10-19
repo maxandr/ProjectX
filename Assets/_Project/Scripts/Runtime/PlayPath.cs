@@ -11,6 +11,7 @@ namespace ProjectX
     /// </summary>
     [RequireComponent(typeof(SplineContainer))]
     [DefaultExecutionOrder(-100)]
+    [ExecuteAlways] // so edit-mode tools can query the path
     public class PlayPath : MonoBehaviour
     {
         [Tooltip("Lookup samples per metre of spline length.")]

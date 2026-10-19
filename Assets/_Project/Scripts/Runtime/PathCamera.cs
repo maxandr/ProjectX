@@ -48,10 +48,13 @@ namespace ProjectX
 
         // (pitch, yaw). A straight path has yaw 90, which leaves the camera at its authored rotation;
         // PlayPath's camera keys add on top.
-        Vector2 TargetRotation()
+        Vector2 TargetRotation() =>
+            RotationAt(target.position.x, rian != null ? rian.Facing : 1f, basePitch, baseYaw);
+
+        /// <summary>The settled (pitch, yaw) for a target at <paramref name="targetX"/>, from the authored base angles.</summary>
+        public Vector2 RotationAt(float targetX, float facing, float basePitch, float baseYaw)
         {
-            float facing = rian != null ? rian.Facing : 1f;
-            float x = target.position.x + facing * lookAhead;
+            float x = targetX + facing * lookAhead;
             Vector2 keyed = PlayPath.CameraRotationAt(x);
             return new Vector2(basePitch + keyed.x, baseYaw + weight * Mathf.DeltaAngle(90f, PlayPath.Yaw(x)) + keyed.y);
         }
