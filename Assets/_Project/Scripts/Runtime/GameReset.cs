@@ -36,7 +36,10 @@ namespace ProjectX
                 reset.performed -= OnReset;
         }
 
-        void OnReset(InputAction.CallbackContext _)
+        void OnReset(InputAction.CallbackContext _) => Restart();
+
+        /// <summary>Restarts the whole game from the beginning.</summary>
+        public static void Restart()
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

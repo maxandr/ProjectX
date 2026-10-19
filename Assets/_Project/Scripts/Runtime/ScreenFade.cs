@@ -17,6 +17,7 @@ namespace ProjectX
         [Min(0f)] public float fadeInTime = 0.5f;
 
         static ScreenFade instance;
+        static bool coveredAcrossLoad; // set by FadeOut: the next ScreenFade to wake starts covered and fades in
 
         float alpha;
         Coroutine running;
@@ -24,6 +25,13 @@ namespace ProjectX
         void Awake()
         {
             instance = this;
+            if (coveredAcrossLoad)
+            {
+                coveredAcrossLoad = false;
+                alpha = 1f;
+                running = StartCoroutine(Reveal());
+                return;
+            }
             enabled = false; // OnGUI runs only while fading
         }
 
@@ -52,6 +60,25 @@ namespace ProjectX
             instance.running = instance.StartCoroutine(instance.Sequence(covered, revealing));
         }
 
+        /// <summary>
+        /// Fades out over <paramref name="duration"/> seconds, calls <paramref name="covered"/> and stays covered,
+        /// e.g. before a scene load; the ScreenFade of the next loaded scene then fades in from black.
+        /// Without a ScreenFade in the scene the callback runs at once.
+        /// </summary>
+        public static void FadeOut(float duration, Action covered)
+        {
+            if (instance == null)
+            {
+                covered?.Invoke();
+                return;
+            }
+
+            instance.enabled = true;
+            if (instance.running != null)
+                instance.StopCoroutine(instance.running);
+            instance.running = instance.StartCoroutine(instance.FadeOutSequence(duration, covered));
+        }
+
         IEnumerator Sequence(Action covered, Action revealing)
         {
             yield return FadeTo(1f, fadeOutTime);
@@ -59,6 +86,18 @@ namespace ProjectX
             if (holdTime > 0f)
                 yield return new WaitForSeconds(holdTime);
             revealing?.Invoke();
+            yield return Reveal();
+        }
+
+        IEnumerator FadeOutSequence(float duration, Action covered)
+        {
+            yield return FadeTo(1f, duration);
+            coveredAcrossLoad = true;
+            covered?.Invoke();
+        }
+
+        IEnumerator Reveal()
+        {
             yield return FadeTo(0f, fadeInTime);
             running = null;
             enabled = false;
