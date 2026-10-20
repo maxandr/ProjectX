@@ -55,6 +55,7 @@ namespace ProjectX
                  + $"{warp}  warp to checkpoint\n"
                  + $"Wheel  time scale ({scale:0.00}x)\n"
                  + "Wheel click  time 1x\n"
+                 + "F  control the Fox (A/D, Space)\n"
                  + "R  restart game";
         }
     }

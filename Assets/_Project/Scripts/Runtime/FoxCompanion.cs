@@ -38,6 +38,12 @@ namespace ProjectX
         [Tooltip("Lower than this the Fox hops down instead of walking off; deeper than safeDropHeight it refuses.")]
         public float maxHopDown = 1f;
         public float safeDropHeight = 8f;
+        [Tooltip("Cracks in the ground up to this wide (cm) are walked over, not jumped.")]
+        public float crackWidthCm = 20f;
+        [Tooltip("Step-downs up to this deep (cm) are walked off, not jumped.")]
+        public float stairStepCm = 80f;
+        [Tooltip("How far before a step (cm, from the collider's front) the Fox takes off, so it hops up without touching the wall.")]
+        public float stepTakeOffCm = 100f;
         [Tooltip("Height of a jump's apex above the higher of take-off and landing.")]
         public float jumpArc = 0.6f;
         [Tooltip("How far before a closed barrier's edge the Fox stops.")]
@@ -150,7 +156,7 @@ namespace ProjectX
                 velocity.x = Mathf.MoveTowards(velocity.x, dir * speed * PlayPath.Forward(transform.position.x).x, acceleration * dt);
 
                 if (IsGrounded && dir != 0f)
-                    Traverse(dir);
+                    Traverse(dir, Mathf.Abs(dx));
             }
 
             velocity.y -= gravity * dt;
@@ -172,30 +178,38 @@ namespace ProjectX
         }
 
         /// <summary>Looks ahead for steps, gaps and ledges and decides to hop, walk on or stop.</summary>
-        void Traverse(float dir)
+        void Traverse(float dir, float distance)
         {
             Vector3 p = transform.position;
             Vector3 forward = PlayPath.Forward(p.x) * dir;
             float ahead = controller.radius + 0.15f;
 
-            // Step up: a wall in front whose top is reachable.
-            if (Probe.Raycast(p + Vector3.up * 0.15f, forward, ahead + 0.1f, out var wall))
+            // Step up: a wall in front whose top is reachable. A walkable slope is left to the controller.
+            // The wall is spotted stepTakeOffCm early so the hop starts before the Fox reaches it.
+            float wallAhead = Mathf.Max(ahead + 0.1f, controller.radius + stepTakeOffCm / 100f);
+            if (Probe.Raycast(p + Vector3.up * 0.15f, forward, wallAhead, out var wall))
             {
+                if (Vector3.Angle(wall.normal, Vector3.up) <= controller.slopeLimit)
+                    return;
+                // The Fox stops before the wall anyway: walk on and leave it there.
+                if (wall.distance > distance + controller.radius)
+                    return;
+
                 var top = PlayPath.Snap(new Vector3(wall.point.x + forward.x * 0.35f, p.y + maxStepUp + 0.2f, 0f));
                 if (Probe.Raycast(top, Vector3.down, maxStepUp + 0.2f, out var step))
                 {
                     if (step.point.y - p.y > controller.stepOffset)
                         JumpTo(step.point);
                 }
-                else
+                else if (wall.distance <= ahead + 0.1f)
                 {
                     velocity.x = 0f; // too tall
                 }
                 return;
             }
 
-            // Ground continues (including small step-downs the controller handles itself).
-            if (Probe.Raycast(p + forward * ahead + Vector3.up * 0.3f, Vector3.down, 0.3f + 0.6f, out _))
+            // Ground continues (including stair steps to walk off, and narrow cracks).
+            if (Probe.SphereCast(p + forward * ahead + Vector3.up * 0.3f, crackWidthCm / 200f, Vector3.down, 0.3f + stairStepCm / 100f, out _))
                 return;
 
             // Gap or step-down: find the nearest landing within jump range.
@@ -215,7 +229,8 @@ namespace ProjectX
                 velocity.x = 0f;
         }
 
-        void JumpTo(Vector3 landing)
+        /// <summary>Hops in an arc that lands on <paramref name="landing"/>.</summary>
+        public void JumpTo(Vector3 landing)
         {
             Vector3 p = transform.position;
             float apex = Mathf.Max(p.y, landing.y) + jumpArc;
