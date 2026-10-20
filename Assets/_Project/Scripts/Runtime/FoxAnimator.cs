@@ -18,6 +18,8 @@ namespace ProjectX
         [Tooltip("Ground speed of the run clip at scale 1; the model is small, so playback speeds up to keep the feet planted.")]
         public float runClipSpeed = 6f;
         public float maxPlaybackSpeed = 2f;
+        [Tooltip("Length (ms) of the push-off at the start of the jump clip; playback is timed so it ends as the Fox leaves the ground.")]
+        public float jumpPushOffMs = 500f;
 
         static readonly int SpeedId = Animator.StringToHash("Speed");
         static readonly int MotionSpeedId = Animator.StringToHash("MotionSpeed");
@@ -25,6 +27,7 @@ namespace ProjectX
         static readonly int JumpId = Animator.StringToHash("Jump");
         static readonly int FreeFallId = Animator.StringToHash("FreeFall");
         static readonly int HardLandingId = Animator.StringToHash("HardLanding");
+        static readonly int JumpSpeedId = Animator.StringToHash("JumpSpeed");
 
         Animator animator;
         float airTime;
@@ -46,8 +49,9 @@ namespace ProjectX
 
         void LateUpdate()
         {
-            bool grounded = fox.IsGrounded;
-            airTime = grounded ? 0f : airTime + Time.deltaTime;
+            // Pushing off for a jump already counts as the jump, though the Fox has not left the ground yet.
+            bool grounded = fox.IsGrounded && !fox.IsTakingOff;
+            airTime = fox.IsGrounded ? 0f : airTime + Time.deltaTime;
 
             Vector3 velocity = fox.Velocity;
             float speed = new Vector2(velocity.x, velocity.z).magnitude;
@@ -69,7 +73,11 @@ namespace ProjectX
             }
         }
 
-        void OnJumped() => animator.SetBool(JumpId, true);
+        void OnJumped()
+        {
+            animator.SetFloat(JumpSpeedId, fox.takeOffDelayMs > 0f ? Mathf.Max(jumpPushOffMs / fox.takeOffDelayMs, 1f) : 1f);
+            animator.SetBool(JumpId, true);
+        }
 
         // Receivers for the animation events baked into the Starter Assets clips (no audio here).
         void OnFootstep(AnimationEvent animationEvent) { }

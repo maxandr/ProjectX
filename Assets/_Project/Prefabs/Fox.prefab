@@ -88,8 +88,9 @@ MonoBehaviour:
   maxStepUp: 1
   maxHopDown: 1
   safeDropHeight: 8
-  stepTakeOffCm: 100
-  jumpArc: 0.45
+  stepTakeOffCm: 160
+  leapSpeed: 7
+  jumpClearanceCm: 20
   barrierStopMargin: 0.5
   sitScale: {x: 1, y: 1, z: 1}
   airScale: {x: 1, y: 1, z: 1}

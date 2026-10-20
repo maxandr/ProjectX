@@ -44,8 +44,12 @@ namespace ProjectX
         public float stairStepCm = 80f;
         [Tooltip("How far before a step (cm, from the collider's front) the Fox takes off, so it hops up without touching the wall.")]
         public float stepTakeOffCm = 100f;
-        [Tooltip("Height of a jump's apex above the higher of take-off and landing.")]
-        public float jumpArc = 0.6f;
+        [Tooltip("Horizontal speed of a jump: the Fox leaps forward like an animal, the arc only as high as this needs.")]
+        public float leapSpeed = 7f;
+        [Tooltip("Least clearance (cm) of a jump's apex above the higher of take-off and landing.")]
+        public float jumpClearanceCm = 20f;
+        [Tooltip("Time (ms) the Fox runs on, pushing off, before it leaves the ground; the jump clip's push-off plays in it.")]
+        public float takeOffDelayMs = 120f;
         [Tooltip("How far before a closed barrier's edge the Fox stops.")]
         [FormerlySerializedAs("waterStopMargin")]
         public float barrierStopMargin = 0.5f;
@@ -62,6 +66,8 @@ namespace ProjectX
         public RianController Leader => rian;
         public float Facing { get; private set; } = 1f;
         public bool IsGrounded { get; private set; }
+        /// <summary>Pushing off for a jump: still on the ground, about to leave it.</summary>
+        public bool IsTakingOff => takeOffTimer > 0f;
         public Vector3 Velocity => velocity;
         public event Action Jumped;
 
@@ -69,6 +75,8 @@ namespace ProjectX
         IFoxNode node;
         Vector3 velocity;
         bool jumping;
+        float takeOffTimer;
+        Vector3 jumpLanding;
         float yaw = 90f;
         float trotPhase;
         Vector3 poseBasePosition;
@@ -126,6 +134,7 @@ namespace ProjectX
             controller.enabled = true;
             velocity = Vector3.zero;
             jumping = false;
+            takeOffTimer = 0f;
         }
 
         /// <summary>Stops the Fox at the edge of any closed barrier.</summary>
@@ -158,6 +167,12 @@ namespace ProjectX
                 if (IsGrounded && dir != 0f)
                     Traverse(dir, Mathf.Abs(dx));
             }
+            else if (IsTakingOff)
+            {
+                takeOffTimer -= dt;
+                if (!IsTakingOff)
+                    Launch();
+            }
 
             velocity.y -= gravity * dt;
             Vector3 forward = PlayPath.Forward(transform.position.x);
@@ -173,7 +188,7 @@ namespace ProjectX
             if (IsGrounded && velocity.y <= 0f)
             {
                 velocity.y = -2f;
-                jumping = false;
+                jumping = IsTakingOff;
             }
         }
 
@@ -208,13 +223,16 @@ namespace ProjectX
                 return;
             }
 
+            // The Fox keeps running while it pushes off, so it looks that much further for the edge.
+            float edgeAhead = ahead + Mathf.Abs(velocity.x) * takeOffDelayMs / 1000f;
+
             // Ground continues (including stair steps to walk off, and narrow cracks).
-            if (Probe.SphereCast(p + forward * ahead + Vector3.up * 0.3f, crackWidthCm / 200f, Vector3.down, 0.3f + stairStepCm / 100f, out _))
+            if (Probe.SphereCast(p + forward * edgeAhead + Vector3.up * 0.3f, crackWidthCm / 200f, Vector3.down, 0.3f + stairStepCm / 100f, out _))
                 return;
 
             // Gap or step-down: find the nearest landing within jump range.
             float scanTop = p.y + maxStepUp + 0.2f;
-            for (float d = ahead + 0.25f; d <= ahead + maxGapJump + 0.3f; d += 0.2f)
+            for (float d = edgeAhead + 0.25f; d <= edgeAhead + maxGapJump + 0.3f; d += 0.2f)
             {
                 var origin = PlayPath.Snap(new Vector3(p.x + forward.x * d, scanTop, 0f));
                 if (Probe.Raycast(origin, Vector3.down, maxStepUp + 0.2f + maxHopDown, out var landing))
@@ -229,17 +247,28 @@ namespace ProjectX
                 velocity.x = 0f;
         }
 
-        /// <summary>Hops in an arc that lands on <paramref name="landing"/>.</summary>
+        /// <summary>Pushes off for takeOffDelayMs without breaking stride, then hops in an arc that lands on <paramref name="landing"/>.</summary>
         public void JumpTo(Vector3 landing)
         {
-            Vector3 p = transform.position;
-            float apex = Mathf.Max(p.y, landing.y) + jumpArc;
-            float vy = Mathf.Sqrt(2f * gravity * (apex - p.y));
-            float flightTime = vy / gravity + Mathf.Sqrt(2f * (apex - landing.y) / gravity);
-            velocity = new Vector3((landing.x - p.x) / flightTime, vy, 0f);
+            jumpLanding = landing;
             jumping = true;
-            IsGrounded = false;
+            takeOffTimer = takeOffDelayMs / 1000f;
             Jumped?.Invoke();
+            if (!IsTakingOff)
+                Launch();
+        }
+
+        void Launch()
+        {
+            Vector3 p = transform.position;
+            Vector3 landing = jumpLanding;
+            // Shortest flight that still clears the higher end, stretched so the leap keeps leapSpeed forward.
+            float apex = Mathf.Max(p.y, landing.y) + jumpClearanceCm / 100f;
+            float minFlight = Mathf.Sqrt(2f * (apex - p.y) / gravity) + Mathf.Sqrt(2f * (apex - landing.y) / gravity);
+            float flightTime = Mathf.Max(minFlight, Mathf.Abs(landing.x - p.x) / leapSpeed);
+            float vy = (landing.y - p.y) / flightTime + 0.5f * gravity * flightTime;
+            velocity = new Vector3((landing.x - p.x) / flightTime, vy, 0f);
+            IsGrounded = false;
         }
 
         void UpdatePose()
