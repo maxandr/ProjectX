@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 namespace ProjectX
@@ -18,6 +19,8 @@ namespace ProjectX
         [Tooltip("World rotation when fallen. (0, 0, 90) lays a +Y plank toward -X.")]
         public Vector3 fallenEuler = new Vector3(0f, 0f, 90f);
         public float fallDuration = 0.6f;
+        [Tooltip("Raised once the plank lies across the chasm (e.g. to call the Fox back to Rian).")]
+        public UnityEvent onFallen;
 
         bool kicked;
 
@@ -38,6 +41,7 @@ namespace ProjectX
                 {
                     plankCollider.enabled = true;
                     chasm.isOpen = true;
+                    onFallen.Invoke();
                 });
         }
     }
