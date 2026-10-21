@@ -36,6 +36,9 @@ namespace ProjectX
         public float gapCm = 2f;
         [Tooltip("A tip further than this many bone lengths from its rest spot snaps back (respawn teleport).")]
         public float snapDistance = 3f;
+        [Tooltip("Percent of the character's own movement the tips carry along, so steps up, landings and walls " +
+                 "don't whip the chains; turning and the animation still swing them.")]
+        [Range(0f, 100f)] public float followPercent;
 
         [Tooltip("Ties each chain to the next one in Chains (the last to the first), like one piece of cloth.")]
         public bool linkChains;
@@ -55,6 +58,7 @@ namespace ProjectX
 
         readonly List<Bone[]> bones = new();
         int depth;
+        Vector3 lastPosition;
 
         void Awake()
         {
@@ -89,6 +93,7 @@ namespace ProjectX
                 bone.transform.localRotation = bone.restLocalRotation;
                 bone.tip = bone.previousTip = bone.transform.TransformPoint(bone.localTip);
             }
+            lastPosition = transform.position;
         }
 
         void LateUpdate()
@@ -100,6 +105,16 @@ namespace ProjectX
             float frames = dt * 60f;
             float gap = gapCm / 100f;
             Vector3 fall = gravity * (dt * dt);
+
+            // Shift tips and their history together, so the carried movement adds no swing of its own.
+            Vector3 carry = (transform.position - lastPosition) * (followPercent / 100f);
+            lastPosition = transform.position;
+            foreach (Bone[] chain in bones)
+                foreach (Bone bone in chain)
+                {
+                    bone.tip += carry;
+                    bone.previousTip += carry;
+                }
 
             // One depth at a time, so each bone starts from its parent's new pose and neighbours can be linked.
             for (int d = 0; d < depth; d++)

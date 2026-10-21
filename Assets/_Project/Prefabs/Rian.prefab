@@ -148,37 +148,38 @@ MonoBehaviour:
   chains:
   - name: Front Left
     root: {fileID: 3766638684561530275}
-    stiffnessPercent: 52
-    dampingPercent: 66.1
+    stiffnessPercent: 55
+    dampingPercent: 70
   - name: Right
     root: {fileID: 2236048251380001117}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 45
+    dampingPercent: 60
   - name: Back Right
     root: {fileID: 5113891941530380224}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 45
+    dampingPercent: 60
   - name: Back Left
     root: {fileID: 2416353804021935075}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 45
+    dampingPercent: 60
   - name: Left
     root: {fileID: 4292283504550556155}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 45
+    dampingPercent: 60
   - name: Front Right
     root: {fileID: 2474350641932950649}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 55
+    dampingPercent: 70
   - name: Top
     root: {fileID: 4238856729507306388}
-    stiffnessPercent: 21.4
-    dampingPercent: 30.6
+    stiffnessPercent: 45
+    dampingPercent: 60
   colliders:
   - {fileID: 2412195160446788465}
   gravity: {x: 0, y: -0.5, z: 0}
   gapCm: 0.4
   snapDistance: 3
+  followPercent: 90
   linkChains: 0
   linkSlackPercent: 5
 --- !u!1 &4123722079846317110

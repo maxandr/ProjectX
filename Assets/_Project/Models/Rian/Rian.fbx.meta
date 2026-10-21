@@ -17,6 +17,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: hair_scalp
+    second: {fileID: 2100000, guid: 7c9d0e0774184a9c9707d60d8acc1bfd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: poncho
     second: {fileID: 2100000, guid: 45c7ec9831131e84b9eaeb627dd120c2, type: 2}
   - first:
