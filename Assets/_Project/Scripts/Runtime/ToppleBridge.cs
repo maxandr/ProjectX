@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -49,6 +50,9 @@ namespace ProjectX
         [Tooltip("Raised once it lies across the chasm (e.g. to call the Fox back to Rian).")]
         public UnityEvent onFallen;
 
+        /// <summary>Raised when <see cref="Nudge"/> starts a sway.</summary>
+        public event Action Nudged;
+
         Quaternion standing;
         Vector3 fallAxis;
         float strain;
@@ -75,8 +79,11 @@ namespace ProjectX
         /// <summary>A short sway, as if brushed against.</summary>
         public void Nudge()
         {
+            if (toppled)
+                return;
             nudge = 1f;
             StartStraining();
+            Nudged?.Invoke();
         }
 
         public void Topple()
