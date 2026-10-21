@@ -269,8 +269,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e53854e579586f4ea19d56025159aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.RianController
-  moveSpeed: 5
+  walkSpeed: 2
+  runSpeed: 5
   groundAcceleration: 60
+  runAcceleration: 6
   groundDeceleration: 70
   airAcceleration: 30
   maxJumpForce: 5

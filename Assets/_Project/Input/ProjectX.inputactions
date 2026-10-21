@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "6f1c2a3e-8b4d-4c7a-9e21-3d5f7a9b1c07",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Reset",
                     "type": "Button",
                     "id": "6f1c2a3e-8b4d-4c7a-9e21-3d5f7a9b1c06",
@@ -203,6 +212,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Fox",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6f1c2a3e-8b4d-4c7a-9e21-3d5f7a9b1c60",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6f1c2a3e-8b4d-4c7a-9e21-3d5f7a9b1c61",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

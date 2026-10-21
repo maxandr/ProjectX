@@ -11,9 +11,10 @@ namespace ProjectX
         [SerializeField] InputActionAsset actions;
 
         InputActionMap map;
-        InputAction move, jump, sacrifice, fox;
+        InputAction move, jump, sprint, sacrifice, fox;
 
         public float MoveX => move?.ReadValue<float>() ?? 0f;
+        public bool SprintHeld => sprint?.IsPressed() ?? false;
         public bool JumpPressed => jump?.WasPressedThisFrame() ?? false;
         public bool JumpHeld => jump?.IsPressed() ?? false;
         public bool SacrificeHeld => sacrifice?.IsPressed() ?? false;
@@ -33,6 +34,7 @@ namespace ProjectX
             map = actions.FindActionMap("Player", true);
             move = map.FindAction("Move", true);
             jump = map.FindAction("Jump", true);
+            sprint = map.FindAction("Sprint", true);
             sacrifice = map.FindAction("Sacrifice", true);
             fox = map.FindAction("Fox", true);
         }

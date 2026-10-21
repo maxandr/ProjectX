@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ProjectX
 {
@@ -11,8 +12,13 @@ namespace ProjectX
     public class RianController : MonoBehaviour
     {
         [Header("Movement")]
-        public float moveSpeed = 5f;
+        [Tooltip("Speed along the path when walking (the default).")]
+        public float walkSpeed = 2f;
+        [Tooltip("Speed along the path while Sprint (Shift) is held.")]
+        [FormerlySerializedAs("moveSpeed")] public float runSpeed = 5f;
         public float groundAcceleration = 60f;
+        [Tooltip("Acceleration between walk and run speed, both speeding up and slowing back down (m/s²).")]
+        public float runAcceleration = 6f;
         public float groundDeceleration = 70f;
         public float airAcceleration = 30f;
 
@@ -61,12 +67,17 @@ namespace ProjectX
             coyoteTimer = IsGrounded ? coyoteTime : coyoteTimer - dt;
             jumpBufferTimer = input.JumpPressed ? jumpBufferTime : jumpBufferTimer - dt;
 
-            // velocity.x is world X; scaling by the path direction keeps moveSpeed the speed along the path.
+            // velocity.x is world X; scaling by the path direction keeps the tuned speed along the path.
             Vector3 forward = PlayPath.Forward(transform.position.x);
-            float targetVx = moveX * moveSpeed * forward.x;
+            float speed = input.SprintHeld ? runSpeed : walkSpeed;
+            float targetVx = moveX * speed * forward.x;
             float accel = IsGrounded
                 ? (Mathf.Abs(targetVx) > 0.01f ? groundAcceleration : groundDeceleration)
                 : airAcceleration;
+            // Above walk speed in the move direction, ease into and out of the run.
+            float walkVx = walkSpeed * Mathf.Abs(forward.x);
+            if (IsGrounded && targetVx * velocity.x > 0f && Mathf.Abs(velocity.x) >= walkVx - 0.01f)
+                accel = runAcceleration;
             velocity.x = Mathf.MoveTowards(velocity.x, targetVx, accel * dt);
 
             if (jumpBufferTimer > 0f && coyoteTimer > 0f)
