@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -35,6 +36,11 @@ namespace ProjectX
         public float beamLightBoost = 2.5f;
 
         public UnityEvent onSacrifice;
+
+        /// <summary>Raised when Rian starts holding Sacrifice in the trigger.</summary>
+        public event Action HoldStarted;
+        /// <summary>Raised when she lets go (or leaves) before the hold completes.</summary>
+        public event Action HoldCancelled;
 
         RianInput rianInput;
         Material glowMaterial;
@@ -88,6 +94,7 @@ namespace ProjectX
                 return;
             StopGlow();
             holdRoutine = StartCoroutine(Hold());
+            HoldStarted?.Invoke();
         }
 
         void CancelHold()
@@ -98,6 +105,7 @@ namespace ProjectX
             holdRoutine = null;
             if (isActiveAndEnabled)
                 glowRoutine = StartCoroutine(GlowTo(0f, 3f));
+            HoldCancelled?.Invoke();
         }
 
         IEnumerator Hold()
