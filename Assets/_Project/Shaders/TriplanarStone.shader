@@ -1,6 +1,6 @@
 // World-space triplanar PBR for the level's stone and wood. The detail map is a neutral texture baked in
 // Art/Level/Proto_Level.blend (alpha = height); the material tint keeps the level's palette. An optional
-// moss layer grows on up-facing surfaces.
+// moss layer grows on up-facing surfaces. The emission mask (UV0) limits the glow to carved patterns.
 Shader "ProjectX/TriplanarStone"
 {
     Properties
@@ -21,6 +21,7 @@ Shader "ProjectX/TriplanarStone"
         _MossSharpness("Moss Edge Sharpness", Range(1, 20)) = 6
 
         [HDR] _EmissionColor("Emission", Color) = (0, 0, 0, 1)
+        [NoScaleOffset] _EmissionMap("Emission Mask (UV0)", 2D) = "white" {}
     }
 
     SubShader
@@ -47,6 +48,7 @@ Shader "ProjectX/TriplanarStone"
         TEXTURE2D(_NormalMap); SAMPLER(sampler_NormalMap);
         TEXTURE2D(_MossMap); SAMPLER(sampler_MossMap);
         TEXTURE2D(_MossNormal); SAMPLER(sampler_MossNormal);
+        TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap);
 
         float3 TriWeights(float3 n)
         {
@@ -137,6 +139,7 @@ Shader "ProjectX/TriplanarStone"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
+                float2 uv : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -146,6 +149,7 @@ Shader "ProjectX/TriplanarStone"
                 float3 positionWS : TEXCOORD0;
                 float3 normalWS : TEXCOORD1;
                 half fogFactor : TEXCOORD2;
+                float2 uv : TEXCOORD3;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -159,6 +163,7 @@ Shader "ProjectX/TriplanarStone"
                 output.positionWS = pos.positionWS;
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 output.fogFactor = ComputeFogFactor(pos.positionCS.z);
+                output.uv = input.uv;
                 return output;
             }
 
@@ -182,7 +187,7 @@ Shader "ProjectX/TriplanarStone"
                 surface.smoothness = stone.smoothness;
                 surface.occlusion = stone.occlusion;
                 surface.normalTS = half3(0, 0, 1);
-                surface.emission = _EmissionColor.rgb;
+                surface.emission = _EmissionColor.rgb * SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, input.uv).r;
                 surface.alpha = 1;
 
                 half4 color = UniversalFragmentPBR(inputData, surface);
