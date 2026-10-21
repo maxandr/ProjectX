@@ -58,7 +58,7 @@ namespace ProjectX
 
         void OnJumped() => animator.SetBool(JumpId, true);
 
-        // Receivers for the animation events baked into the Starter Assets clips (no audio here).
+        // Receivers for the animation events baked into the Starter Assets clips (FootstepAudio plays the sound).
         void OnFootstep(AnimationEvent animationEvent) { }
         void OnLand(AnimationEvent animationEvent) { }
     }

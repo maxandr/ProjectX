@@ -9,6 +9,11 @@ namespace ProjectX
         public float rumbleAmplitude = 0.04f;
         public float rumbleFrequency = 45f;
 
+        /// <summary>Raised when a move is ordered, with its delay and duration (seconds).</summary>
+        public event Action<float, float> MoveStarted;
+        /// <summary>Raised when <see cref="SnapTo"/> cuts the pillar to a position at once.</summary>
+        public event Action Snapped;
+
         Vector3 restPosition;
         Coroutine routine;
 
@@ -18,6 +23,7 @@ namespace ProjectX
         {
             if (routine != null)
                 StopCoroutine(routine);
+            MoveStarted?.Invoke(delay, duration);
 
             float fromY = transform.position.y;
             routine = Tween.Run(this, duration, t =>
@@ -34,6 +40,7 @@ namespace ProjectX
                 StopCoroutine(routine);
             routine = null;
             transform.position = new Vector3(restPosition.x, topY, restPosition.z);
+            Snapped?.Invoke();
         }
     }
 }

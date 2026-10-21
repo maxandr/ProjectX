@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace ProjectX
@@ -11,6 +12,9 @@ namespace ProjectX
     {
         [Tooltip("Multiplies the size and height of this character's ripples (e.g. smaller for the Fox).")]
         public float scale = 1f;
+
+        /// <summary>Raised when the pivot enters the water, with the fall speed (m/s, downward positive).</summary>
+        public event Action<float> Splashed;
 
         Vector3 lastPosition;
         float travelled;
@@ -50,6 +54,7 @@ namespace ProjectX
                 float fallSpeed = Time.deltaTime > 0f ? -delta.y / Time.deltaTime : 0f;
                 float strength = Mathf.Clamp(fallSpeed / ripples.splashSpeed, 0.3f, 1.5f);
                 WaterRipples.AddDrop(surfacePoint, ripples.splashRadius * scale, -ripples.splashHeight * scale * strength);
+                Splashed?.Invoke(fallSpeed);
                 travelled = 0f;
             }
             wasInWater = true;
