@@ -11,20 +11,25 @@ namespace ProjectX
     static class FullscreenGameView
     {
         const string MenuPath = "ProjectX/Fullscreen Game View _F11";
-
-        static EditorWindow window;
+        // Marks our popup so F11 still finds it after a domain reload has wiped the static fields.
+        const string Title = "Fullscreen Game";
 
         [MenuItem(MenuPath)]
         static void Toggle()
         {
-            if (window != null)
-            {
-                window.Close();
-                window = null;
+            System.Type gameViewType = EditorInternals.EditorType("UnityEditor.GameView");
+            bool closed = false;
+            foreach (EditorWindow open in Resources.FindObjectsOfTypeAll(gameViewType))
+                if (open.titleContent.text == Title)
+                {
+                    open.Close();
+                    closed = true;
+                }
+            if (closed)
                 return;
-            }
 
-            window = (EditorWindow)ScriptableObject.CreateInstance(EditorInternals.EditorType("UnityEditor.GameView"));
+            var window = (EditorWindow)ScriptableObject.CreateInstance(gameViewType);
+            window.titleContent = new GUIContent(Title);
             EditorInternals.Set(window, "showToolbar", false);
             if (!TryGetMonitor(out Bounds monitor))
                 return;
