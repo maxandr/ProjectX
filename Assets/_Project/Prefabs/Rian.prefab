@@ -469,11 +469,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -9170956301682750666, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.007679487
+      value: 0.0076794876
       objectReference: {fileID: 0}
     - target: {fileID: -9170956301682750666, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0362644
+      value: -0.036264405
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_LocalPosition.x
@@ -517,11 +517,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4888211219052169, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.007679487
+      value: 0.0076794876
       objectReference: {fileID: 0}
     - target: {fileID: 4888211219052169, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0362644
+      value: 0.036264405
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_Name
@@ -538,7 +538,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
+      objectReference: {fileID: 9100000, guid: 57f6c89909517f340997973c7c89469f, type: 2}
     - target: {fileID: 5866666021909216657, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
@@ -568,6 +568,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2975691452589810096}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4920594834241059735}
     - targetCorrespondingSourceObject: {fileID: -3015034654504466996, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
       insertIndex: -1
       addedObject: {fileID: 631431932786826716}
@@ -915,6 +918,18 @@ MonoBehaviour:
   controller: {fileID: 399257821393175243}
   turnSpeed: 900
   fallTimeout: 0.15
+--- !u!114 &4920594834241059735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8789682293080721023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603427d325569374891c318346c0d8de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectX.Runtime::ProjectX.PushAnimation
 --- !u!1 &9222741854678224692 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8446621555963055078, guid: fb3e8ee7dbf2a894ea24b69db941e649, type: 3}
