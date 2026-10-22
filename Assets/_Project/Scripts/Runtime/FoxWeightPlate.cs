@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ProjectX
 {
@@ -20,6 +21,11 @@ namespace ProjectX
         [SerializeField] Renderer glowRenderer;
         [ColorUsage(false, true)] public Color idleGlow = new Color(0.4f, 0.9f, 0.8f) * 1.5f;
         [ColorUsage(false, true)] public Color pressedGlow = new Color(1f, 0.8f, 0.4f) * 4f;
+
+        [Tooltip("Raised when the Fox settles on the plate.")]
+        public UnityEvent onOccupied;
+        [Tooltip("Raised when the plate is freed again (the Fox was called off, or a checkpoint reset it).")]
+        public UnityEvent onReleased;
 
         public bool IsOccupied { get; private set; }
         public Vector3 StandPoint => transform.position;
@@ -62,6 +68,7 @@ namespace ProjectX
             foreach (var pillar in linkedPillars)
                 pillar.MoveTo(raisedTopY, moveDuration);
             SetGlow(pressedGlow);
+            onOccupied.Invoke();
         }
 
         public void Release()
@@ -73,6 +80,7 @@ namespace ProjectX
             for (int i = 0; i < linkedPillars.Length; i++)
                 linkedPillars[i].MoveTo(linkedRestY[i], moveDuration, releaseDelay);
             SetGlow(idleGlow);
+            onReleased.Invoke();
         }
 
         /// <summary>Puts the plate, counterweight and stones back at rest at once (the teleport recalled the Fox).</summary>
@@ -85,6 +93,7 @@ namespace ProjectX
             StopAllCoroutines(); // only glow tweens run on the plate
             if (glowMaterial != null)
                 glowMaterial.SetColor("_EmissionColor", idleGlow);
+            onReleased.Invoke();
         }
 
         void SetGlow(Color target)
